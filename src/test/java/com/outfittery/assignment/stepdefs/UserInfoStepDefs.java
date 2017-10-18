@@ -1,60 +1,55 @@
 package com.outfittery.assignment.stepdefs;
 
-import com.outfittery.assignment.utils.ResetUserData;
+import com.outfittery.assignment.businessflow.EditUserData;
+import com.outfittery.assignment.businessflow.Login;
+import com.outfittery.assignment.utils.ContextManager;
+import com.outfittery.assignment.utils.KEYS;
 import cucumber.api.DataTable;
-import cucumber.api.PendingException;
 import cucumber.api.java8.En;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.List;
+import java.util.Map;
+
 public class UserInfoStepDefs implements En {
+    private final ContextManager contextManager = ContextManager.getInstance();
     public Logger LOGGER = LogManager.getLogger(this.getClass());
 
     public UserInfoStepDefs() {
         Given("^I reset all user data including\\(Address/Phone number/password\\)$", () -> {
-            String stepDef="I reset all user data including\\(Address/Phone number/password\\)";
+            String stepDef = "I reset all user data including\\(Address/Phone number/password\\)";
             LOGGER.info(stepDef);
-            ResetUserData.resetPhoneNumber();
-            ResetUserData.resetUserAddress();
-            ResetUserData.resetDefaultPassword();
         });
 
         Given("^I logged in to outfittery portal$", () -> {
-            // Write code here that turns the phrase above into concrete actions
-            throw new PendingException();
+            new Login().loginWithMyCredentials(contextManager.get(KEYS.OUTFITTERY_USER).toString()
+                    , contextManager.get(KEYS.OUTFITTERY_PASSWORD).toString());
         });
 
-        When("^I edit phone number to \"([^\"]*)\"$", (String arg1) -> {
-            // Write code here that turns the phrase above into concrete actions
-            throw new PendingException();
+        When("^I edit phone number to \"([^\"]*)\"$", (String phoneNumber) -> {
+            new EditUserData().editPhoneNumber(phoneNumber);
         });
 
         Then("^Phone number should be updated successfully$", () -> {
-            // Write code here that turns the phrase above into concrete actions
-            throw new PendingException();
+            new EditUserData().checkUpdatedPhoneNumber();
         });
 
-        When("^I edit address with below details$", (DataTable arg1) -> {
-            // Write code here that turns the phrase above into concrete actions
-            // For automatic transformation, change DataTable to one of
-            // List<YourType>, List<List<E>>, List<Map<K,V>> or Map<K,V>.
-            // E,K,V must be a scalar (String, Integer, Date, enum etc)
-            throw new PendingException();
+        When("^I edit address with below details$", (DataTable dataTable) -> {
+            List<Map<String, String>> userData = dataTable.asMaps(String.class, String.class);
+            new EditUserData().editUserAddress(userData.get(0));
         });
 
         Then("^User's address should be updated$", () -> {
-            // Write code here that turns the phrase above into concrete actions
-            throw new PendingException();
+            new EditUserData().checkUpdatedAddress();
         });
 
         When("^I edit password$", () -> {
-            // Write code here that turns the phrase above into concrete actions
-            throw new PendingException();
+            new EditUserData().editPassword();
         });
 
         Then("^password should be updated on next login$", () -> {
-            // Write code here that turns the phrase above into concrete actions
-            throw new PendingException();
+            new Login().logOutAndReloginWithNewCredentials();
         });
 
 

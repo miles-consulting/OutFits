@@ -3,15 +3,19 @@ package com.outfittery.assignment.pages;
 import com.outfittery.assignment.utils.ContextManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class AbstractPage {
+
+    @FindBy(xpath = "//div[@class='avatar']")
+    private WebElement logoutAvatar;
+
+    @FindBy(xpath = "//div[@class='header__user_menu_dropdown_item']")
+    private WebElement logoutToolTip;
 
     public Logger LOGGER = LogManager.getLogger(this.getClass());
 
@@ -41,7 +45,11 @@ public class AbstractPage {
     void enterTextTo(WebElement webElement, String textValue, int timeout) {
         LOGGER.debug("Enter " + textValue + " in  " + webElement.toString());
         if (waitForElementToBeClickable(webElement, timeout)) {
-            webElement.clear();
+            try {
+                webElement.clear();
+            } catch (InvalidElementStateException ex) {
+                LOGGER.debug(ex.getMessage());
+            }
             webElement.sendKeys(textValue);
         }
     }
@@ -82,5 +90,10 @@ public class AbstractPage {
 
     public boolean hasTitle(String pageTitle) {
         return this.getPageTitle().equals(pageTitle);
+    }
+
+    public void logout() {
+        clickOnElement(logoutAvatar);
+        clickOnElement(logoutToolTip);
     }
 }
